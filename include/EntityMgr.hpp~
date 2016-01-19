@@ -1,0 +1,59 @@
+#include <vector>
+#include <Entity.hpp>
+#include <cstddef>
+
+class EntityPtr;
+
+class EntityMgr
+{
+
+public:
+
+	static EntityMgr& getInstance()
+	{
+
+		static EntityMgr instance;
+		return instance;
+		
+	}
+
+	std::vector<EntityPtr> create(Entity proto, size_t number=1);
+	void destroy(EntityPtr& entity);
+	void update(uint32_t elpased);
+
+	
+    Entity* operator [] (size_t i) {return &_entities[i];}
+
+private:
+
+	std::vector<size_t> _freeSlots;
+	std::vector<Entity> _entities;
+
+	EntityMgr(){}
+	
+	EntityMgr(EntityMgr const&) = delete;
+	void operator = (EntityMgr const&) = delete;
+
+	friend class EntityPtr;
+	
+};
+
+class EntityPtr
+{
+
+    private:
+
+	EntityMgr& _entityMgr;
+	size_t _id;
+	
+	EntityPtr(EntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
+
+    public:
+
+	~EntityPtr(){}
+
+	EntityType getType(){ return _entityMgr[_id]->_type; }
+
+	friend class EntityMgr;
+	
+};

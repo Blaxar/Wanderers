@@ -1,0 +1,13 @@
+#include <vector>
+#include <Entity.hpp>
+#include <cstddef>
+
+class EntityFactory
+{
+
+	EntityFactory();
+	~EntityFactory();
+
+	Entity createWanderer();
+
+}
