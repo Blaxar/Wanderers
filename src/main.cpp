@@ -3,6 +3,7 @@
 #include <thread>
 #include <components/graphics/OpenGLMgr.hpp>
 #include <components/ai/TestAIMgr.hpp>
+#include <components/physics/TestPhysicsMgr.hpp>
 
 using namespace std::chrono;
 using namespace std::this_thread;
@@ -11,27 +12,34 @@ int main(int argc, char* argv[])
 {
 
 	Entity proto;
-	proto._spatial._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+	//proto._spatial._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
 	EntityMgr& entMgr = EntityMgr::getInstance();
 	OpenGLMgr glMgr;
 	TestAIMgr aiMgr;
+	TestPhysicsMgr phMgr;
 	
 	srand(system_clock::now().time_since_epoch().count());
 	
-	for(int i=0; i<1000; i++)
+	for(int i=0; i<1; i++)
 	{
-		entMgr.create(proto);
 		proto._spatial._default._x = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._y = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._z = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 
 		proto._spatial._default._rotX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
 		proto._spatial._default._rotY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
+		proto._spatial._default._rotZ = 0;
+
+		proto._ai._default._targetX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+		proto._ai._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+		proto._ai._default._targetZ = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+		entMgr.create(proto);
 	}
 	
 	entMgr.registerGraphicsMgr((ComponentMgr*) &glMgr);
 	entMgr.registerAIMgr((ComponentMgr*) &aiMgr);
+	entMgr.registerPhysicsMgr((ComponentMgr*) &phMgr);
 
     std::chrono::milliseconds current, last = duration_cast< milliseconds >
                                              (system_clock::now().time_since_epoch());

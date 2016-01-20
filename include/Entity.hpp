@@ -83,7 +83,13 @@ struct VoidComponent _void;
 union AIComponent
 {
 
-struct DefaultAIComponent{} _default;
+struct DefaultAIComponent{
+
+	double _targetX;
+	double _targetY;
+	double _targetZ;
+
+} _default;
 struct VoidComponent _void;
 
 };
