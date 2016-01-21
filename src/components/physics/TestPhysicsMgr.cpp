@@ -53,12 +53,11 @@ void TestPhysicsMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities
 		if(aimRotY < PI) aimRotY += 2*PI;
 		aimRotX *= (180.0 / PI);
 		aimRotY *= (180.0 / PI);
-		if(aimRotX > 180) aimRotX = 360-aimRotX;
-		if(aimRotY > 180) aimRotY = 360-aimRotY;
+		if(aimRotX > 180) aimRotX = aimRotX-360;
+		if(aimRotY > 180) aimRotY = aimRotY-360;
 		if(aimRotX < -180) aimRotX += 360;
 		if(aimRotY < -180) aimRotY += 360;
-		//float aimRotZ = (atan2(aimY,aimX) - atan2(next_velo[3][1],next_velo[3][0])) * (180.0 / PI);
-		std::cout << aimRotX << " " << aimRotY << std::endl;
+
 	    //Adjust angular velocity to aim for the good direction
 		entity._physics._default._angularVelocityX = -aimRotX;
 		entity._physics._default._angularVelocityY = -aimRotY;

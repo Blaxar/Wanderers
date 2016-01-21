@@ -18,11 +18,14 @@ class OpenGLMgr: public ComponentMgr
     private:
 
 	GLuint program;
+	GLuint line_program;
 	GLFWwindow* window;
-	GLuint vao;
-    GLuint buffer;
-	GLint           mv_location;
-    GLint           proj_location;
+	GLuint vao[2];
+    GLuint buffer[2];
+	GLint  mv_location;
+    GLint  proj_location;
+	GLint  line_mv_location;
+    GLint  line_proj_location;
 
     float           aspect;
     vmath::mat4    proj_matrix;

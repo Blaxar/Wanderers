@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 {
 
 	Entity proto;
-	//proto._spatial._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+	proto._physics._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
 	EntityMgr& entMgr = EntityMgr::getInstance();
 	OpenGLMgr glMgr;
@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	
 	srand(system_clock::now().time_since_epoch().count());
 	
-	for(int i=0; i<1; i++)
+	for(int i=0; i<10000; i++)
 	{
 		proto._spatial._default._x = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._y = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
