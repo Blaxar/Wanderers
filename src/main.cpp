@@ -14,14 +14,12 @@ int main(int argc, char* argv[])
 	Entity proto;
 	proto._physics._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
 	
-	EntityMgr& entMgr = EntityMgr::getInstance();
-	OpenGLMgr glMgr;
-	TestAIMgr aiMgr;
-	TestPhysicsMgr phMgr;
+	EntityMgr<TestAIMgr,TestPhysicsMgr,OpenGLMgr,VoidMgr>& entMgr =
+	EntityMgr<TestAIMgr,TestPhysicsMgr,OpenGLMgr,VoidMgr>::getInstance();
 	
 	srand(system_clock::now().time_since_epoch().count());
 	
-	for(int i=0; i<10000; i++)
+	for(int i=0; i<1000; i++)
 	{
 		proto._spatial._default._x = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._y = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
@@ -37,9 +35,9 @@ int main(int argc, char* argv[])
 		entMgr.create(proto);
 	}
 	
-	entMgr.registerGraphicsMgr((ComponentMgr*) &glMgr);
-	entMgr.registerAIMgr((ComponentMgr*) &aiMgr);
-	entMgr.registerPhysicsMgr((ComponentMgr*) &phMgr);
+	//entMgr.registerGraphicsMgr((ComponentMgr*) &glMgr);
+	//entMgr.registerAIMgr((ComponentMgr*) &aiMgr);
+	//entMgr.registerPhysicsMgr((ComponentMgr*) &phMgr);
 
     std::chrono::milliseconds current, last = duration_cast< milliseconds >
                                              (system_clock::now().time_since_epoch());

@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <Entity.hpp>
 
-class EntityMgr;
 struct Entity;
 
 class ComponentMgr

@@ -6,29 +6,79 @@
 #include <ComponentMgr.hpp>
 #include <cstddef>
 
+class VoidMgr
+{
+	
+    public:
+
+    void update(uint16_t elapsed_time, std::vector<Entity>& entities){}
+	
+};
+
+template <class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityPtr;
 
+template<class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityMgr
 {
 
+using AIMgr = AIMgrT;
+using PhysicsMgr = PhysicsMgrT;
+using GraphicsMgr = GraphicsMgrT;
+using SoundMgr = SoundMgrT;
+using TypedEntityPtr = EntityPtr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
+	
 public:
 
-	static EntityMgr& getInstance()
+	static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>& getInstance()
 	{
 
-		static EntityMgr instance;
+		static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT> instance;
 		return instance;
 		
 	}
 
-	std::vector<EntityPtr> create(Entity proto, size_t number=1);
-	void destroy(EntityPtr& entity);
-	void update(uint32_t elapsed);
+	std::vector<TypedEntityPtr> create(Entity proto, size_t number=1)
+    {
 
-	void registerPhysicsMgr(ComponentMgr* component){_physicsMgr = component;}
-	void registerGraphicsMgr(ComponentMgr* component){_graphicsMgr = component;}
-	void registerSoundMgr(ComponentMgr* component){_soundMgr = component;}
-    void registerAIMgr(ComponentMgr* component){_aiMgr = component;}
+		std::vector<TypedEntityPtr> entities;
+		size_t added_entities;
+
+		//First, we search for available slots among already allocated ones
+		for(added_entities = 0; added_entities < number && added_entities < _freeSlots.size(); added_entities++)
+		{
+			entities.push_back(TypedEntityPtr(*this, _entities.size()));
+			_entities[_freeSlots[added_entities]] = proto;
+		}
+
+		//Then, if we still have entities left to create, we allocate space for them
+		for(size_t i=added_entities; i<number; i++)
+		{
+			entities.push_back(TypedEntityPtr(*this, _entities.size()));
+			_entities.push_back(proto);
+		}
+		
+		return entities;
+	
+	}
+	
+	void destroy(TypedEntityPtr& entity)
+	{
+
+		_entities[entity._id]._type = None;
+		_freeSlots.push_back(entity._id);
+	
+    }
+	
+	void update(uint32_t elapsed)
+	{
+
+	    _aiMgr.update(elapsed, _entities);
+	    _physicsMgr.update(elapsed, _entities);
+	    _graphicsMgr.update(elapsed, _entities);
+	    _soundMgr.update(elapsed, _entities);
+	
+	}
 
     Entity* operator [] (size_t i) {return &_entities[i];}
 
@@ -37,29 +87,32 @@ private:
 	std::vector<size_t> _freeSlots;
 	std::vector<Entity> _entities;
 
-	ComponentMgr* _physicsMgr;
-	ComponentMgr* _graphicsMgr;
-	ComponentMgr* _soundMgr;
-	ComponentMgr* _aiMgr;
+    AIMgr _aiMgr;
+	PhysicsMgr _physicsMgr;
+    GraphicsMgr _graphicsMgr;
+    SoundMgr _soundMgr;
 
-	EntityMgr():_physicsMgr(NULL),_graphicsMgr(NULL),_soundMgr(NULL),_aiMgr(NULL){}
+	EntityMgr(){}
 	
 	EntityMgr(EntityMgr const&) = delete;
 	void operator = (EntityMgr const&) = delete;
 
-	friend class EntityPtr;
+	friend TypedEntityPtr;
 	
 };
 
+template<class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityPtr
 {
 
+	using TypedEntityMgr = EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
+	
     private:
 
-	EntityMgr& _entityMgr;
+    TypedEntityMgr& _entityMgr;
 	size_t _id;
 	
-	EntityPtr(EntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
+	EntityPtr(TypedEntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
 
     public:
 
@@ -67,7 +120,7 @@ class EntityPtr
 
 	EntityType getType(){ return _entityMgr[_id]->_type; }
 
-	friend class EntityMgr;
+	friend TypedEntityMgr;
 	
 };
 
