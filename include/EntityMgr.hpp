@@ -22,18 +22,16 @@ template<class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityMgr
 {
 
-using AIMgr = AIMgrT;
-using PhysicsMgr = PhysicsMgrT;
-using GraphicsMgr = GraphicsMgrT;
-using SoundMgr = SoundMgrT;
 using TypedEntityPtr = EntityPtr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
 	
 public:
 
-	static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>& getInstance()
+	static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>&
+	getInstance(AIMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr)
 	{
 
-		static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT> instance;
+		static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT> instance
+			   (aiMgr, physicsMgr, graphicsMgr, soundMgr);
 		return instance;
 		
 	}
@@ -87,12 +85,13 @@ private:
 	std::vector<size_t> _freeSlots;
 	std::vector<Entity> _entities;
 
-    AIMgr _aiMgr;
-	PhysicsMgr _physicsMgr;
-    GraphicsMgr _graphicsMgr;
-    SoundMgr _soundMgr;
+    AIMgrT& _aiMgr;
+	PhysicsMgrT& _physicsMgr;
+    GraphicsMgrT& _graphicsMgr;
+    SoundMgrT& _soundMgr;
 
-	EntityMgr(){}
+	EntityMgr(AIMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr):
+		      _aiMgr(aiMgr), _physicsMgr(physicsMgr), _graphicsMgr(graphicsMgr), _soundMgr(soundMgr){}
 	
 	EntityMgr(EntityMgr const&) = delete;
 	void operator = (EntityMgr const&) = delete;

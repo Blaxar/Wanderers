@@ -13,9 +13,14 @@ int main(int argc, char* argv[])
 
 	Entity proto;
 	proto._physics._default={0.0f,0.0f,0.0f,0.0f,0.0f,0.0f,0.0f};
+
+	TestAIMgr aiMgr;
+	TestPhysicsMgr phyMgr;
+	OpenGLMgr glMgr;
+	VoidMgr sndMgr;
 	
-	EntityMgr<TestAIMgr,TestPhysicsMgr,OpenGLMgr,VoidMgr>& entMgr =
-	EntityMgr<TestAIMgr,TestPhysicsMgr,OpenGLMgr,VoidMgr>::getInstance();
+	EntityMgr<TestAIMgr, TestPhysicsMgr, OpenGLMgr, VoidMgr>& entMgr =
+	EntityMgr<TestAIMgr, TestPhysicsMgr, OpenGLMgr, VoidMgr>::getInstance(aiMgr, phyMgr, glMgr, sndMgr);
 	
 	srand(system_clock::now().time_since_epoch().count());
 	
