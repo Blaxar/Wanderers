@@ -4,9 +4,31 @@
 #include <stdlib.h>
 #include <iostream>
 
-OpenGLMgr::OpenGLMgr()
+static struct glParams
 {
 
+	int windowWidth;
+	int windowHeight;
+
+	double camPosX, camPosY, camPosZ;
+	float camRotX, camRotY, camRotZ;
+	
+} glParams;
+
+OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight)
+{
+
+    glParams.windowWidth = windowWidth;
+    glParams.windowHeight = windowHeight;
+
+	glParams.camPosX = 0;
+	glParams.camPosY = 0;
+	glParams.camPosZ = 10;
+
+	glParams.camRotX = 0;
+	glParams.camRotY = 0;
+	glParams.camRotZ = 0;
+	
 	if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
@@ -23,14 +45,20 @@ OpenGLMgr::OpenGLMgr()
 	glfwWindowHint(GLFW_SAMPLES, GL_FALSE);
 	glfwWindowHint(GLFW_STEREO, GL_FALSE);
 
-	window = glfwCreateWindow(800, 600, "test", NULL, NULL);
-    if (!window)
+	_window = glfwCreateWindow(glParams.windowWidth, glParams.windowHeight, "test", NULL, NULL);
+    if (!_window)
     {
         fprintf(stderr, "Failed to open window\n");
         return;
     }
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(_window);
+
+	glfwSetWindowSizeCallback(_window, glfw_onResize);
+    glfwSetKeyCallback(_window, glfw_onKey);
+    glfwSetMouseButtonCallback(_window, glfw_onMouseButton);
+    glfwSetCursorPosCallback(_window, glfw_onMouseMove);
+    glfwSetScrollCallback(_window, glfw_onMouseWheel);
 	
 	gl3wInit();
 
@@ -151,9 +179,6 @@ OpenGLMgr::OpenGLMgr()
 	line_mv_location = glGetUniformLocation(line_program, "mv_matrix");
     line_proj_location = glGetUniformLocation(line_program, "proj_matrix");
 	
-	proj_matrix = vmath::perspective(50.0f, (float)800 / (float)600, 0.1f, 1000.0f)*
-		          vmath::translate((float)0,(float)0,(float)-10);
-	
 	glGenVertexArrays(2, vao);
 	glGenBuffers(2, buffer);
 	time_spent = 0;
@@ -256,7 +281,7 @@ OpenGLMgr::~OpenGLMgr()
 	glDeleteProgram(line_program);
     glDeleteBuffers(2, buffer);
 
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(_window);
     glfwTerminate();
 	
 }
@@ -264,11 +289,17 @@ OpenGLMgr::~OpenGLMgr()
 void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 {
 
+	proj_matrix = vmath::perspective(50.0f, (float)glParams.windowWidth / (float)glParams.windowHeight, 0.1f, 1000.0f)*
+	              vmath::rotate(glParams.camRotX,glParams.camRotY, glParams.camRotZ);
+
+	glParams.camRotX += (elapsed_time/1000.0)*15;
+	glParams.camRotY += (elapsed_time/1000.0)*15;
+	
 	static const GLfloat green[] = { 0.0f, 0.25f, 0.0f, 1.0f };
     static const GLfloat one = 1.0f;
 	time_spent += elapsed_time;
 	
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, glParams.windowWidth, glParams.windowHeight);
     glClearBufferfv(GL_COLOR, 0, green);
     glClearBufferfv(GL_DEPTH, 0, &one);
 
@@ -282,13 +313,14 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 	for(Entity& ent : entities)
 	{
 
-		vmath::mat4 mv_matrix = vmath::translate((float)ent._spatial._default._x,
-												 (float)ent._spatial._default._y,
-												 (float)ent._spatial._default._z)
+		// Note that use sliding origin.
+		vmath::mat4 mv_matrix = vmath::translate<float>(ent._spatial._default._x-glParams.camPosX,
+												        ent._spatial._default._y-glParams.camPosY,
+												        ent._spatial._default._z-glParams.camPosZ)
 			                    *
-			                    vmath::rotate((float)ent._spatial._default._rotX,
-											  (float)ent._spatial._default._rotY,
-											  (float)ent._spatial._default._rotZ);
+			                    vmath::rotate<float>(ent._spatial._default._rotX,
+											         ent._spatial._default._rotY,
+											         ent._spatial._default._rotZ);
 		glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -305,15 +337,41 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 	for(Entity& ent : entities)
 	{
 
-		vmath::mat4 mv_matrix = vmath::translate((float)ent._ai._default._targetX,
-												 (float)ent._ai._default._targetY,
-												 (float)ent._ai._default._targetZ);
+		vmath::mat4 mv_matrix = vmath::translate<float>(ent._ai._default._targetX-glParams.camPosX,
+												        ent._ai._default._targetY-glParams.camPosY,
+												        ent._ai._default._targetZ-glParams.camPosZ);
 		glUniformMatrix4fv(line_mv_location, 1, GL_FALSE, mv_matrix);
         glDrawArrays(GL_LINES, 0, 18);
 
 	}
 	
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(_window);
     glfwPollEvents();	
 	
+}
+
+void OpenGLMgr::glfw_onResize(GLFWwindow* window, int w, int h)
+{
+    glParams.windowWidth = w;
+	glParams.windowHeight = h;
+}
+
+void OpenGLMgr::glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+        
+}
+
+void OpenGLMgr::glfw_onMouseButton(GLFWwindow* window, int button, int action, int mods)
+{
+        
+}
+
+void OpenGLMgr::glfw_onMouseMove(GLFWwindow* window, double x, double y)
+{
+
+}
+
+void OpenGLMgr::glfw_onMouseWheel(GLFWwindow* window, double xoffset, double yoffset)
+{
+
 }

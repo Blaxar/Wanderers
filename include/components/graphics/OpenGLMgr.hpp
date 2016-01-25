@@ -16,10 +16,10 @@ class OpenGLMgr: public ComponentMgr
 {
 
     private:
-
+	
 	GLuint program;
 	GLuint line_program;
-	GLFWwindow* window;
+	GLFWwindow* _window;
 	GLuint vao[2];
     GLuint buffer[2];
 	GLint  mv_location;
@@ -31,10 +31,25 @@ class OpenGLMgr: public ComponentMgr
     vmath::mat4    proj_matrix;
 
 	uint64_t time_spent;
+
+    void setWindowTitle(const char * title)
+    {
+        glfwSetWindowTitle(_window, title);
+    }
+
+    static void glfw_onResize(GLFWwindow* window, int w, int h);
+
+    static void glfw_onKey(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+    static void glfw_onMouseButton(GLFWwindow* window, int button, int action, int mods);
+
+    static void glfw_onMouseMove(GLFWwindow* window, double x, double y);
+
+    static void glfw_onMouseWheel(GLFWwindow* window, double xoffset, double yoffset);
 	
     public:
 
-    OpenGLMgr();
+    OpenGLMgr(int windowWidth = 800, int windowHeight = 600);
 	~OpenGLMgr();
     virtual void update(uint16_t elapsed_time, std::vector<Entity>& entities);
 	

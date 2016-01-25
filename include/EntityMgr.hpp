@@ -15,22 +15,22 @@ class VoidMgr
 	
 };
 
-template <class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
+template <class ControlMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityPtr;
 
-template<class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
+template<class ControlMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityMgr
 {
 
-using TypedEntityPtr = EntityPtr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
+using TypedEntityPtr = EntityPtr<ControlMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
 	
 public:
 
-	static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>&
-	getInstance(AIMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr)
+	static EntityMgr<ControlMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>&
+	getInstance(ControlMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr)
 	{
 
-		static EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT> instance
+		static EntityMgr<ControlMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT> instance
 			   (aiMgr, physicsMgr, graphicsMgr, soundMgr);
 		return instance;
 		
@@ -71,7 +71,7 @@ public:
 	void update(uint32_t elapsed)
 	{
 
-	    _aiMgr.update(elapsed, _entities);
+	    _controlMgr.update(elapsed, _entities);
 	    _physicsMgr.update(elapsed, _entities);
 	    _graphicsMgr.update(elapsed, _entities);
 	    _soundMgr.update(elapsed, _entities);
@@ -85,13 +85,13 @@ private:
 	std::vector<size_t> _freeSlots;
 	std::vector<Entity> _entities;
 
-    AIMgrT& _aiMgr;
+    ControlMgrT& _controlMgr;
 	PhysicsMgrT& _physicsMgr;
     GraphicsMgrT& _graphicsMgr;
     SoundMgrT& _soundMgr;
 
-	EntityMgr(AIMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr):
-		      _aiMgr(aiMgr), _physicsMgr(physicsMgr), _graphicsMgr(graphicsMgr), _soundMgr(soundMgr){}
+	EntityMgr(ControlMgrT& aiMgr, PhysicsMgrT& physicsMgr, GraphicsMgrT& graphicsMgr, SoundMgrT& soundMgr):
+		      _controlMgr(aiMgr), _physicsMgr(physicsMgr), _graphicsMgr(graphicsMgr), _soundMgr(soundMgr){}
 	
 	EntityMgr(EntityMgr const&) = delete;
 	void operator = (EntityMgr const&) = delete;
@@ -100,11 +100,11 @@ private:
 	
 };
 
-template<class AIMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
+template<class ControlMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityPtr
 {
 
-	using TypedEntityMgr = EntityMgr<AIMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
+	using TypedEntityMgr = EntityMgr<ControlMgrT, PhysicsMgrT, GraphicsMgrT, SoundMgrT>;
 	
     private:
 
