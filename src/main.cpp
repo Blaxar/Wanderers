@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	
 	srand(system_clock::now().time_since_epoch().count());
 	
-	for(int i=0; i<1000; i++)
+	for(int i=0; i<100; i++)
 	{
 		proto._spatial._default._x = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._y = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
@@ -40,9 +40,6 @@ int main(int argc, char* argv[])
 		entMgr.create(proto);
 	}
 	
-	//entMgr.registerGraphicsMgr((ComponentMgr*) &glMgr);
-	//entMgr.registerAIMgr((ComponentMgr*) &aiMgr);
-	//entMgr.registerPhysicsMgr((ComponentMgr*) &phMgr);
 
     std::chrono::milliseconds current, last = duration_cast< milliseconds >
                                              (system_clock::now().time_since_epoch());
@@ -62,7 +59,7 @@ int main(int argc, char* argv[])
 		}
 	    else
 		{
-			sleep_for(milliseconds(time_btw_frames/2));
+		    sleep_for(milliseconds(time_btw_frames));
 		}
 		
 	}

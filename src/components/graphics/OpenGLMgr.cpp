@@ -15,7 +15,7 @@ static struct glParams
 	
 } glParams;
 
-OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight)
+OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight, size_t pov): _pov(pov)
 {
 
     glParams.windowWidth = windowWidth;
@@ -289,11 +289,24 @@ OpenGLMgr::~OpenGLMgr()
 void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 {
 
-	proj_matrix = vmath::perspective(50.0f, (float)glParams.windowWidth / (float)glParams.windowHeight, 0.1f, 1000.0f)*
-	              vmath::rotate(glParams.camRotX,glParams.camRotY, glParams.camRotZ);
+	glParams.camRotX = entities[_pov]._spatial._default._rotX;
+	glParams.camRotY = entities[_pov]._spatial._default._rotY;
+	glParams.camRotZ = entities[_pov]._spatial._default._rotZ;
+	
+    glParams.camPosX = entities[_pov]._spatial._default._x;
+	glParams.camPosY = entities[_pov]._spatial._default._y;
+	glParams.camPosZ = entities[_pov]._spatial._default._z;
 
-	glParams.camRotX += (elapsed_time/1000.0)*15;
-	glParams.camRotY += (elapsed_time/1000.0)*15;
+	/* /!\ Be careful when reversing the object rotation to adjust the point of view: calling the rotate function first rotates around X, then Y, then Z.
+	       If one wants to reverse such transformation, one might first rotate Z backward, then Y backward, then X backward. */
+	proj_matrix = vmath::perspective(50.0f, (float)glParams.windowWidth / (float)glParams.windowHeight, 0.1f, 1000.0f)
+		          *
+		          vmath::rotate<float>(-glParams.camRotX+180, 0, 0)
+		          *
+		          vmath::rotate<float>(0, -glParams.camRotY, 0)
+		          *
+		          vmath::rotate<float>(0, 0, -glParams.camRotZ);
+			      
 	
 	static const GLfloat green[] = { 0.0f, 0.25f, 0.0f, 1.0f };
     static const GLfloat one = 1.0f;
@@ -312,7 +325,7 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 
 	for(Entity& ent : entities)
 	{
-
+		
 		// Note that use sliding origin.
 		vmath::mat4 mv_matrix = vmath::translate<float>(ent._spatial._default._x-glParams.camPosX,
 												        ent._spatial._default._y-glParams.camPosY,
@@ -340,6 +353,7 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 		vmath::mat4 mv_matrix = vmath::translate<float>(ent._ai._default._targetX-glParams.camPosX,
 												        ent._ai._default._targetY-glParams.camPosY,
 												        ent._ai._default._targetZ-glParams.camPosZ);
+		
 		glUniformMatrix4fv(line_mv_location, 1, GL_FALSE, mv_matrix);
         glDrawArrays(GL_LINES, 0, 18);
 

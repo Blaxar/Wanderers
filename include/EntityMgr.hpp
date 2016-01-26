@@ -77,11 +77,11 @@ public:
 	    _soundMgr.update(elapsed, _entities);
 	
 	}
-
+	
     Entity* operator [] (size_t i) {return &_entities[i];}
 
 private:
-
+	
 	std::vector<size_t> _freeSlots;
 	std::vector<Entity> _entities;
 
