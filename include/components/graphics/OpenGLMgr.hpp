@@ -12,12 +12,15 @@
 #include <vmath.h>
 #include <ComponentMgr.hpp>
 
-class OpenGLMgr: public ComponentMgr
+class OpenGLMgr
+#ifndef _CACHE_FRIENDLY
+	: public ComponentMgr
+#endif
 {
 
     private:
 
-	size_t _pov;
+	Entity* _pov;
 	GLuint program;
 	GLuint line_program;
 	GLFWwindow* _window;
@@ -50,9 +53,18 @@ class OpenGLMgr: public ComponentMgr
 	
     public:
 
-    OpenGLMgr(int windowWidth = 800, int windowHeight = 600, size_t pov = 0);
+    OpenGLMgr(int windowWidth = 800, int windowHeight = 600);
 	~OpenGLMgr();
-    virtual void update(uint16_t elapsed_time, std::vector<Entity>& entities);
+
+	
+    void setPov(Entity* ent)
+	{
+		_pov = ent;
+	}
+	
+    void setUp(void);
+    void update(const uint32_t elapsed_time_ns, Entity& ent);
+	void tearDown(void);
 	
 };
 

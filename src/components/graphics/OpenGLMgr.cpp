@@ -15,7 +15,7 @@ static struct glParams
 	
 } glParams;
 
-OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight, size_t pov): _pov(pov)
+OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight)
 {
 
     glParams.windowWidth = windowWidth;
@@ -286,16 +286,16 @@ OpenGLMgr::~OpenGLMgr()
 	
 }
 
-void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
+void OpenGLMgr::setUp()
 {
 
-	glParams.camRotX = entities[_pov]._spatial._default._rotX;
-	glParams.camRotY = entities[_pov]._spatial._default._rotY;
-	glParams.camRotZ = entities[_pov]._spatial._default._rotZ;
+	glParams.camRotX = _pov->_spatial._default._rotX;
+	glParams.camRotY = _pov->_spatial._default._rotY;
+	glParams.camRotZ = _pov->_spatial._default._rotZ;
 	
-    glParams.camPosX = entities[_pov]._spatial._default._x;
-	glParams.camPosY = entities[_pov]._spatial._default._y;
-	glParams.camPosZ = entities[_pov]._spatial._default._z;
+    glParams.camPosX = _pov->_spatial._default._x;
+	glParams.camPosY = _pov->_spatial._default._y;
+	glParams.camPosZ = _pov->_spatial._default._z;
 
 	/* /!\ Be careful when reversing the object rotation to adjust the point of view: calling the rotate function first rotates around X, then Y, then Z.
 	       If one wants to reverse such transformation, one might first rotate Z backward, then Y backward, then X backward. */
@@ -310,35 +310,34 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 	
 	static const GLfloat green[] = { 0.0f, 0.25f, 0.0f, 1.0f };
     static const GLfloat one = 1.0f;
-	time_spent += elapsed_time;
 	
     glViewport(0, 0, glParams.windowWidth, glParams.windowHeight);
     glClearBufferfv(GL_COLOR, 0, green);
     glClearBufferfv(GL_DEPTH, 0, &one);
+	
+}
 
-	glBindVertexArray(vao[0]);
+void OpenGLMgr::update(const uint32_t elapsed_time, Entity& ent)
+{
+
+    glBindVertexArray(vao[0]);
 	glEnableVertexAttribArray(0);
 	
     glUseProgram(program);
 
 	glUniformMatrix4fv(proj_location, 1, GL_FALSE, proj_matrix);
-
-	for(Entity& ent : entities)
-	{
+	
 		
-		// Note that use sliding origin.
-		vmath::mat4 mv_matrix = vmath::translate<float>(ent._spatial._default._x-glParams.camPosX,
-												        ent._spatial._default._y-glParams.camPosY,
-												        ent._spatial._default._z-glParams.camPosZ)
-			                    *
-			                    vmath::rotate<float>(ent._spatial._default._rotX,
-											         ent._spatial._default._rotY,
-											         ent._spatial._default._rotZ);
-		glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	}
-
+	// Note that use sliding origin.
+	vmath::mat4 mv_matrix = vmath::translate<float>(ent._spatial._default._x-glParams.camPosX,
+												    ent._spatial._default._y-glParams.camPosY,
+												    ent._spatial._default._z-glParams.camPosZ)
+			                *
+			                vmath::rotate<float>(ent._spatial._default._rotX,
+											     ent._spatial._default._rotY,
+											     ent._spatial._default._rotZ);
+	glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
 	glBindVertexArray(vao[1]);
 	glEnableVertexAttribArray(0);
@@ -347,21 +346,21 @@ void OpenGLMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 
 	glUniformMatrix4fv(line_proj_location, 1, GL_FALSE, proj_matrix);
 
-	for(Entity& ent : entities)
-	{
-
-		vmath::mat4 mv_matrix = vmath::translate<float>(ent._ai._default._targetX-glParams.camPosX,
-												        ent._ai._default._targetY-glParams.camPosY,
-												        ent._ai._default._targetZ-glParams.camPosZ);
+	// Note that use sliding origin.
+    mv_matrix = vmath::translate<float>(ent._ai._default._targetX-glParams.camPosX,
+												    ent._ai._default._targetY-glParams.camPosY,
+												    ent._ai._default._targetZ-glParams.camPosZ);
 		
-		glUniformMatrix4fv(line_mv_location, 1, GL_FALSE, mv_matrix);
-        glDrawArrays(GL_LINES, 0, 18);
+	glUniformMatrix4fv(line_mv_location, 1, GL_FALSE, mv_matrix);
+    glDrawArrays(GL_LINES, 0, 18);	
+	
+}
 
-	}
+void OpenGLMgr::tearDown(){
 	
 	glfwSwapBuffers(_window);
-    glfwPollEvents();	
-	
+    glfwPollEvents();
+
 }
 
 void OpenGLMgr::glfw_onResize(GLFWwindow* window, int w, int h)

@@ -11,14 +11,16 @@ TestAIMgr::~TestAIMgr()
 {
 
 }
-	
-void TestAIMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
+
+void TestAIMgr::setUp()
 {
+
+    srand(std::chrono::system_clock::now().time_since_epoch().count());
 	
-	srand(std::chrono::system_clock::now().time_since_epoch().count());
-	
-	for(Entity& entity : entities)
-	{
+}
+
+void TestAIMgr::update(const uint32_t elapsed_time_ns, Entity& entity)
+{
 
 		if((entity._spatial._default._x-entity._ai._default._targetX)*
 		   (entity._spatial._default._x-entity._ai._default._targetX)<0.25 &&
@@ -31,8 +33,10 @@ void TestAIMgr::update(uint16_t elapsed_time, std::vector<Entity>& entities)
 	    	entity._ai._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		    entity._ai._default._targetZ = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		}
-
-	}
 	
 }
 
+void TestAIMgr::tearDown()
+{
+	
+}

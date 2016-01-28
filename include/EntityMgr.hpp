@@ -6,14 +6,26 @@
 #include <ComponentMgr.hpp>
 #include <cstddef>
 
+//#define _CACHE_FRIENDLY
+
 class VoidMgr
+	#ifndef _CACHE_FRIENDLY
+	: public ComponentMgr
+    #endif
 {
 	
     public:
 
-    void update(uint16_t elapsed_time, std::vector<Entity>& entities){}
+	VoidMgr(){}
+	~VoidMgr(){}
+	
+    inline void setUp(void){}
+    inline void update(const uint32_t eapsed_time_ns, Entity& ent){}
+	inline void tearDown(void){}
 	
 };
+
+#ifdef _CACHE_FRIENDLY
 
 template <class ControlMgrT, class PhysicsMgrT, class GraphicsMgrT, class SoundMgrT>
 class EntityPtr;
@@ -36,7 +48,7 @@ public:
 		
 	}
 
-	std::vector<TypedEntityPtr> create(Entity proto, size_t number=1)
+	inline std::vector<TypedEntityPtr> create(Entity proto, size_t number=1)
     {
 
 		std::vector<TypedEntityPtr> entities;
@@ -60,7 +72,7 @@ public:
 	
 	}
 	
-	void destroy(TypedEntityPtr& entity)
+	inline void destroy(TypedEntityPtr& entity)
 	{
 
 		_entities[entity._id]._type = None;
@@ -68,13 +80,24 @@ public:
 	
     }
 	
-	void update(uint32_t elapsed)
+	inline void update(uint32_t elapsed_time_ns)
 	{
 
-	    _controlMgr.update(elapsed, _entities);
-	    _physicsMgr.update(elapsed, _entities);
-	    _graphicsMgr.update(elapsed, _entities);
-	    _soundMgr.update(elapsed, _entities);
+		_controlMgr.setUp();
+		for(Entity& ent: _entities) _controlMgr.update(elapsed_time_ns, ent);
+		_controlMgr.tearDown();
+
+		_physicsMgr.setUp();
+		for(Entity& ent: _entities) _physicsMgr.update(elapsed_time_ns, ent);
+		_physicsMgr.tearDown();
+
+		_graphicsMgr.setUp();
+		for(Entity& ent: _entities) _graphicsMgr.update(elapsed_time_ns, ent);
+		_graphicsMgr.tearDown();
+
+		_soundMgr.setUp();
+		for(Entity& ent: _entities) _soundMgr.update(elapsed_time_ns, ent);
+		_soundMgr.tearDown();
 	
 	}
 	
@@ -84,7 +107,7 @@ private:
 	
 	std::vector<size_t> _freeSlots;
 	std::vector<Entity> _entities;
-
+	
     ControlMgrT& _controlMgr;
 	PhysicsMgrT& _physicsMgr;
     GraphicsMgrT& _graphicsMgr;
@@ -117,10 +140,78 @@ class EntityPtr
 
 	~EntityPtr(){}
 
-	EntityType getType(){ return _entityMgr[_id]->_type; }
+	inline EntityType getType(){ return _entityMgr[_id]->_type; }
 
 	friend TypedEntityMgr;
 	
 };
+
+#else //_CACHE_FRIENDLY
+
+class EntityPtr;
+
+class EntityMgr
+{
+	
+public:
+
+	static EntityMgr&
+	getInstance(ComponentMgr* aiMgr, ComponentMgr* physicsMgr, ComponentMgr* graphicsMgr, ComponentMgr* soundMgr)
+	{
+
+		static EntityMgr instance(aiMgr, physicsMgr, graphicsMgr, soundMgr);
+		return instance;
+		
+	}
+
+	std::vector<EntityPtr> create(Entity proto, size_t number=1);
+	
+	void destroy(EntityPtr& entity);
+	
+	void update(uint32_t elapsed_time_ns);
+	
+    Entity* operator [] (size_t i) {return &_entities[i];}
+
+private:
+	
+	std::vector<size_t> _freeSlots;
+	std::vector<Entity> _entities;
+	
+    ComponentMgr* _controlMgr;
+    ComponentMgr* _physicsMgr;
+    ComponentMgr* _graphicsMgr;
+    ComponentMgr* _soundMgr;
+
+	EntityMgr(ComponentMgr* aiMgr, ComponentMgr* physicsMgr, ComponentMgr* graphicsMgr, ComponentMgr* soundMgr):
+		      _controlMgr(aiMgr), _physicsMgr(physicsMgr), _graphicsMgr(graphicsMgr), _soundMgr(soundMgr){}
+	
+	EntityMgr(EntityMgr const&) = delete;
+	void operator = (EntityMgr const&) = delete;
+
+	friend class EntityPtr;
+	
+};
+
+class EntityPtr
+{
+	
+    private:
+
+    EntityMgr& _entityMgr;
+	size_t _id;
+	
+	EntityPtr(EntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
+
+    public:
+
+	~EntityPtr(){}
+
+	EntityType getType(){ return _entityMgr[_id]->_type; }
+
+	friend class EntityMgr;
+	
+};
+
+#endif //_CACHE_FRIENDLY
 
 #endif //ENTITYMGR_HPP

@@ -39,7 +39,7 @@ include_directories(
     ${DEFAULT_INCLUDE_DIR}
 )
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++11 -O3)
 
 link_directories(${DEFAULT_LINK_DIR})
 add_subdirectory(src)

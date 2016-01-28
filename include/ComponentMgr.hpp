@@ -12,7 +12,9 @@ class ComponentMgr
 	
     public:
 
-    virtual void update(uint16_t elapsed_time, std::vector<Entity>& entities) = 0;
+    virtual void setUp(void) = 0;
+    virtual void update(const uint32_t elapsed_time_ns, Entity& ent) = 0;
+	virtual void tearDown(void) = 0;
 	
 };
 

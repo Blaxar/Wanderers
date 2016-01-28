@@ -6,14 +6,20 @@
 
 #include <ComponentMgr.hpp>
 
-class TestPhysicsMgr: public ComponentMgr
+class TestPhysicsMgr
+#ifndef _CACHE_FRIENDLY
+	: public ComponentMgr
+#endif
 {
 
     public:
 
     TestPhysicsMgr();
 	~TestPhysicsMgr();
-    virtual void update(uint16_t elapsed_time, std::vector<Entity>& entities);
+
+    void setUp(void);
+    void update(const uint32_t elapsed_time_ns, Entity& ent);
+	void tearDown(void);
 	
 };
 
