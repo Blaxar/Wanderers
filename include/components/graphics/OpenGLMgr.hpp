@@ -12,10 +12,7 @@
 #include <vmath.h>
 #include <ComponentMgr.hpp>
 
-class OpenGLMgr
-#ifndef _CACHE_FRIENDLY
-	: public ComponentMgr
-#endif
+class OpenGLMgr: public GraphicsMgr
 {
 
     private:
@@ -63,7 +60,7 @@ class OpenGLMgr
 	}
 	
     void setUp(void);
-    void update(const uint32_t elapsed_time_ns, Entity& ent);
+    void update(const uint32_t elapsed_time_ns, GraphicsComponent& cmp, size_t id);
 	void tearDown(void);
 	
 };

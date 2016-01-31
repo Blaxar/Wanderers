@@ -80,10 +80,10 @@ struct VoidComponent _void;
 
 //AI Components
 
-union AIComponent
+union ControlComponent
 {
 
-struct DefaultAIComponent{
+struct DefaultControlComponent{
 
 	double _targetX;
 	double _targetY;
@@ -104,7 +104,7 @@ struct Entity
 	PhysicsComponent _physics;
 	GraphicsComponent _graphics;
     SoundComponent _sound;
-	AIComponent _ai;
+    ControlComponent _control;
 	
 };
 

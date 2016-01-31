@@ -6,10 +6,8 @@
 
 #include <ComponentMgr.hpp>
 
-class TestPhysicsMgr
-#ifndef _CACHE_FRIENDLY
-	: public ComponentMgr
-#endif
+class TestPhysicsMgr: public PhysicsMgr
+
 {
 
     public:
@@ -18,7 +16,7 @@ class TestPhysicsMgr
 	~TestPhysicsMgr();
 
     void setUp(void);
-    void update(const uint32_t elapsed_time_ns, Entity& ent);
+    void update(const uint32_t elapsed_time_ns, SpatialComponent& sCmp, PhysicsComponent& pCmp, size_t id);
 	void tearDown(void);
 	
 };

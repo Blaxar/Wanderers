@@ -1,7 +1,4 @@
-#include <iostream>
 #include <EntityMgr.hpp>
-
-#ifndef _CACHE_FRIENDLY
 
 std::vector<EntityPtr> EntityMgr::create(Entity proto, size_t number)
 {
@@ -38,22 +35,34 @@ void EntityMgr::destroy(EntityPtr& entity)
 void EntityMgr::update(uint32_t elapsed_time_ns)
 {
 
-	_controlMgr->setUp();
-    for(Entity& ent: _entities) _controlMgr->update(elapsed_time_ns, ent);
-	_controlMgr->tearDown();
+    size_t i=0;
 
-	_physicsMgr->setUp();
-    for(Entity& ent: _entities) _physicsMgr->update(elapsed_time_ns, ent);
-	_physicsMgr->tearDown();
+	if(_controlMgr != nullptr)
+	{
+		_controlMgr->setUp();
+		for(i=0; i<_entities.size(); i++) _controlMgr->update(elapsed_time_ns, (ControlComponent&) _entities[i]._control, i);
+		_controlMgr->tearDown();
+	}
 
-	_graphicsMgr->setUp();
-    for(Entity& ent: _entities) _graphicsMgr->update(elapsed_time_ns, ent);
-	_graphicsMgr->tearDown();
+	if(_physicsMgr != nullptr)
+	{
+		_physicsMgr->setUp();
+		for(i=0; i<_entities.size(); i++) _physicsMgr->update(elapsed_time_ns, (SpatialComponent&) _entities[i]._spatial, (PhysicsComponent&) _entities[i]._physics, i);
+		_physicsMgr->tearDown();
+	}
 
-	_soundMgr->setUp();
-    for(Entity& ent: _entities) _soundMgr->update(elapsed_time_ns, ent);
-    _soundMgr->tearDown();
+	if(_graphicsMgr != nullptr)
+	{
+		_graphicsMgr->setUp();
+		for(i=0; i<_entities.size(); i++) _graphicsMgr->update(elapsed_time_ns, (GraphicsComponent&) _entities[i]._graphics, i);
+		_graphicsMgr->tearDown();
+	}
+
+	if(_soundMgr != nullptr)
+	{
+	    _soundMgr->setUp();
+        for(i=0; i<_entities.size(); i++) _soundMgr->update(elapsed_time_ns, (SoundComponent&) _entities[i]._sound, i);
+        _soundMgr->tearDown();
+	}
 	
 }
-
-#endif

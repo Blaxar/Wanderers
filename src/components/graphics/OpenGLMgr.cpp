@@ -317,7 +317,7 @@ void OpenGLMgr::setUp()
 	
 }
 
-void OpenGLMgr::update(const uint32_t elapsed_time, Entity& ent)
+void OpenGLMgr::update(const uint32_t elapsed_time_ns, GraphicsComponent& cmp, size_t id)
 {
 
     glBindVertexArray(vao[0]);

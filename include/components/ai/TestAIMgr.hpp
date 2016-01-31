@@ -6,10 +6,8 @@
 
 #include <ComponentMgr.hpp>
 
-class TestAIMgr
-#ifndef _CACHE_FRIENDLY
-	: public ComponentMgr
-#endif
+class TestAIMgr: public ControlMgr
+
 {
 
     public:
@@ -18,7 +16,7 @@ class TestAIMgr
 	~TestAIMgr();
 
     void setUp(void);
-    void update(const uint32_t elapsed_time_ns, Entity& ent);
+    void update(const uint32_t elapsed_time_ns, ControlComponent& ent, size_t id);
     void tearDown(void);
 	
 };
