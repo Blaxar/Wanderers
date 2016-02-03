@@ -16,7 +16,7 @@ class TestAIMgr: public ControlMgr
 	~TestAIMgr();
 
     void setUp(void);
-    void update(const uint32_t elapsed_time_ns, ControlComponent& ent, size_t id);
+    void update(const uint32_t elapsed_time_ns, ControlComponent& cmp, size_t id);
     void tearDown(void);
 	
 };

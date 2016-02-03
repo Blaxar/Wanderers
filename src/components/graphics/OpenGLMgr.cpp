@@ -1,4 +1,5 @@
 #include <components/graphics/OpenGLMgr.hpp>
+#include <ComponentReader.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -327,15 +328,17 @@ void OpenGLMgr::update(const uint32_t elapsed_time_ns, GraphicsComponent& cmp, s
 
 	glUniformMatrix4fv(proj_location, 1, GL_FALSE, proj_matrix);
 	
-		
+	const SpatialComponent spatial = _cmpRdr->getSpatialComponent(id);
+	const ControlComponent ai = _cmpRdr->getControlComponent(id);
+	
 	// Note that use sliding origin.
-	vmath::mat4 mv_matrix = vmath::translate<float>(ent._spatial._default._x-glParams.camPosX,
-												    ent._spatial._default._y-glParams.camPosY,
-												    ent._spatial._default._z-glParams.camPosZ)
+	vmath::mat4 mv_matrix = vmath::translate<float>(spatial._default._x-glParams.camPosX,
+												    spatial._default._y-glParams.camPosY,
+												    spatial._default._z-glParams.camPosZ)
 			                *
-			                vmath::rotate<float>(ent._spatial._default._rotX,
-											     ent._spatial._default._rotY,
-											     ent._spatial._default._rotZ);
+			                vmath::rotate<float>(spatial._default._rotX,
+											     spatial._default._rotY,
+											     spatial._default._rotZ);
 	glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -347,9 +350,9 @@ void OpenGLMgr::update(const uint32_t elapsed_time_ns, GraphicsComponent& cmp, s
 	glUniformMatrix4fv(line_proj_location, 1, GL_FALSE, proj_matrix);
 
 	// Note that use sliding origin.
-    mv_matrix = vmath::translate<float>(ent._ai._default._targetX-glParams.camPosX,
-												    ent._ai._default._targetY-glParams.camPosY,
-												    ent._ai._default._targetZ-glParams.camPosZ);
+    mv_matrix = vmath::translate<float>(ai._default._targetX-glParams.camPosX,
+												    ai._default._targetY-glParams.camPosY,
+												    ai._default._targetZ-glParams.camPosZ);
 		
 	glUniformMatrix4fv(line_mv_location, 1, GL_FALSE, mv_matrix);
     glDrawArrays(GL_LINES, 0, 18);	

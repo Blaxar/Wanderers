@@ -1,4 +1,5 @@
 #include <components/physics/TestPhysicsMgr.hpp>
+#include <ComponentReader.hpp>
 #include <chrono>
 #include <vmath.h>
 
@@ -23,25 +24,27 @@ TestPhysicsMgr::~TestPhysicsMgr()
 
 void TestPhysicsMgr::setUp(){}
 
-void TestPhysicsMgr::update(const uint32_t elapsed_time_ns, Entity& entity)
+void TestPhysicsMgr::update(const uint32_t elapsed_time_ns, SpatialComponent& sCmp, PhysicsComponent& pCmp, size_t id)
 {
 
+	const ControlComponent ai = _cmpRdr->getControlComponent(id);
+	
 	//Compute linear velocity based on current facing direction
 	vmath::mat4 next_velo =	
-    vmath::rotate<float>(entity._spatial._default._rotX,
-			             entity._spatial._default._rotY,
-		                 entity._spatial._default._rotZ)
+    vmath::rotate<float>(sCmp._default._rotX,
+			             sCmp._default._rotY,
+		                 sCmp._default._rotZ)
 	    
 	*vmath::translate<float>(0, 0, WANDERER_FORWARD_STEP);
 
 	//Update linear velocity
-	entity._physics._default._velocityX = next_velo[3][0];
-	entity._physics._default._velocityY = next_velo[3][1];
-	entity._physics._default._velocityZ = next_velo[3][2];
+    pCmp._default._velocityX = next_velo[3][0];
+	pCmp._default._velocityY = next_velo[3][1];
+	pCmp._default._velocityZ = next_velo[3][2];
 
-	float aimX = entity._ai._default._targetX - entity._spatial._default._x;
-	float aimY = entity._ai._default._targetY - entity._spatial._default._y;
-    float aimZ = entity._ai._default._targetZ - entity._spatial._default._z;
+	float aimX = ai._default._targetX - sCmp._default._x;
+	float aimY = ai._default._targetY - sCmp._default._y;
+    float aimZ = ai._default._targetZ - sCmp._default._z;
 		
 	//Compute new angles to aim for
 	float aimRotX = atan2(aimY,aimZ) - atan2(next_velo[3][1],next_velo[3][2]);
@@ -64,34 +67,34 @@ void TestPhysicsMgr::update(const uint32_t elapsed_time_ns, Entity& entity)
 	//if(aimRotZ < -180) aimRotZ += 360;
 
 	//Adjust angular velocity to aim for the good direction
-	entity._physics._default._angularVelocityX = -aimRotX;
-	entity._physics._default._angularVelocityY = -aimRotY;
-	//entity._physics._default._angularVelocityZ = -aimRotZ;
+	pCmp._default._angularVelocityX = -aimRotX;
+	pCmp._default._angularVelocityY = -aimRotY;
+	//pCmp._default._angularVelocityZ = -aimRotZ;
 
 	//Apply new angular velocity to rotation proportionally to elapsed time
-	entity._spatial._default._rotX += entity._physics._default._angularVelocityX*(elapsed_time_ns/1000000000.0);
-	entity._spatial._default._rotY += entity._physics._default._angularVelocityY*(elapsed_time_ns/1000000000.0);
-	entity._spatial._default._rotZ += entity._physics._default._angularVelocityZ*(elapsed_time_ns/1000000000.0);
-	if(entity._spatial._default._rotX < 0) entity._spatial._default._rotX += 360;
-	if(entity._spatial._default._rotX >= 360.0) entity._spatial._default._rotX -= 360;
-	if(entity._spatial._default._rotY < 0) entity._spatial._default._rotY += 360;
-	if(entity._spatial._default._rotY >= 360.0) entity._spatial._default._rotY -= 360;
-	if(entity._spatial._default._rotZ < 0) entity._spatial._default._rotZ += 360;
-	if(entity._spatial._default._rotZ >= 360.0) entity._spatial._default._rotZ -= 360;
+	sCmp._default._rotX += pCmp._default._angularVelocityX*(elapsed_time_ns/1000000000.0);
+	sCmp._default._rotY += pCmp._default._angularVelocityY*(elapsed_time_ns/1000000000.0);
+	sCmp._default._rotZ += pCmp._default._angularVelocityZ*(elapsed_time_ns/1000000000.0);
+	if(sCmp._default._rotX < 0) sCmp._default._rotX += 360;
+	if(sCmp._default._rotX >= 360.0) sCmp._default._rotX -= 360;
+	if(sCmp._default._rotY < 0) sCmp._default._rotY += 360;
+	if(sCmp._default._rotY >= 360.0) sCmp._default._rotY -= 360;
+	if(sCmp._default._rotZ < 0) sCmp._default._rotZ += 360;
+	if(sCmp._default._rotZ >= 360.0) sCmp._default._rotZ -= 360;
 
 	//Compute new position using linear velocity proportionally to elapsed time
 	vmath::mat4 next_pos =   
-	vmath::translate<float>(entity._spatial._default._x,
-							entity._spatial._default._y,
-			                entity._spatial._default._z)
-	*vmath::translate<float>(entity._physics._default._velocityX*(elapsed_time_ns/1000000000.0),
-							 entity._physics._default._velocityY*(elapsed_time_ns/1000000000.0),
-							 entity._physics._default._velocityZ*(elapsed_time_ns/1000000000.0));
+	vmath::translate<float>(sCmp._default._x,
+							sCmp._default._y,
+			                sCmp._default._z)
+	*vmath::translate<float>(pCmp._default._velocityX*(elapsed_time_ns/1000000000.0),
+							 pCmp._default._velocityY*(elapsed_time_ns/1000000000.0),
+							 pCmp._default._velocityZ*(elapsed_time_ns/1000000000.0));
 
 	//Apply new linear velocity
-	entity._spatial._default._x = next_pos[3][0];
-	entity._spatial._default._y = next_pos[3][1];
-	entity._spatial._default._z = next_pos[3][2];
+	sCmp._default._x = next_pos[3][0];
+	sCmp._default._y = next_pos[3][1];
+	sCmp._default._z = next_pos[3][2];
 	
 }
 

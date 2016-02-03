@@ -1,4 +1,5 @@
 #include <components/ai/TestAIMgr.hpp>
+#include <ComponentReader.hpp>
 #include <chrono>
 #include <stdlib.h>
 
@@ -19,19 +20,21 @@ void TestAIMgr::setUp()
 	
 }
 
-void TestAIMgr::update(const uint32_t elapsed_time_ns, Entity& entity)
+void TestAIMgr::update(const uint32_t elapsed_time_ns, ControlComponent& cmp, size_t id)
 {
 
-		if((entity._spatial._default._x-entity._ai._default._targetX)*
-		   (entity._spatial._default._x-entity._ai._default._targetX)<0.25 &&
-		   (entity._spatial._default._y-entity._ai._default._targetY)*
-		   (entity._spatial._default._y-entity._ai._default._targetY)<0.25 &&
-		   (entity._spatial._default._z-entity._ai._default._targetZ)*
-		   (entity._spatial._default._z-entity._ai._default._targetZ)<0.25 )
+	const SpatialComponent spatial = _cmpRdr->getSpatialComponent(id);
+	
+		if((spatial._default._x-cmp._default._targetX)*
+		   (spatial._default._x-cmp._default._targetX)<0.25 &&
+		   (spatial._default._y-cmp._default._targetY)*
+		   (spatial._default._y-cmp._default._targetY)<0.25 &&
+		   (spatial._default._z-cmp._default._targetZ)*
+		   (spatial._default._z-cmp._default._targetZ)<0.25 )
 		{
-		    entity._ai._default._targetX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
-	    	entity._ai._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
-		    entity._ai._default._targetZ = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+		    cmp._default._targetX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+	    	cmp._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
+		    cmp._default._targetZ = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		}
 	
 }

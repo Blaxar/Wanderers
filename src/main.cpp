@@ -1,4 +1,5 @@
 #include <EntityMgr.hpp>
+#include <ComponentReader.hpp>
 #include <chrono>
 #include <thread>
 #include <components/graphics/OpenGLMgr.hpp>
@@ -20,6 +21,9 @@ int main(int argc, char* argv[])
 
 	EntityMgr& entMgr =
     EntityMgr::getInstance(&aiMgr, &phyMgr, &glMgr);
+
+	ComponentReader cmpRdr(entMgr);
+	aiMgr.setReader(&cmpRdr); phyMgr.setReader(&cmpRdr); glMgr.setReader(&cmpRdr);
 
 	srand(system_clock::now().time_since_epoch().count());
 	

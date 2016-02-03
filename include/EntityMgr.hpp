@@ -6,6 +6,8 @@
 #include <ComponentMgr.hpp>
 #include <cstddef>
 
+class EntityPtr;
+
 class VoidMgr: public ComponentMgr
 {
 	
@@ -19,8 +21,6 @@ class VoidMgr: public ComponentMgr
 	inline void tearDown(void){}
 	
 };
-
-class EntityPtr;
 
 class EntityMgr
 {
@@ -61,6 +61,7 @@ private:
 	void operator = (EntityMgr const&) = delete;
 
 	friend class EntityPtr;
+	friend class ComponentReader;
 	
 };
 
