@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
 		proto._spatial._default._y = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._spatial._default._z = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 
-		proto._spatial._default._rotX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
-		proto._spatial._default._rotY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
-		proto._spatial._default._rotZ = 0;
+		proto._spatial._default._roll = 0;
+		proto._spatial._default._pitch = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
+		proto._spatial._default._yaw = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*180;
 
 		proto._control._default._targetX = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		proto._control._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;

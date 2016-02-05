@@ -31,11 +31,11 @@ void TestPhysicsMgr::update(const uint32_t elapsed_time_ns, SpatialComponent& sC
 	
 	//Compute linear velocity based on current facing direction
 	vmath::mat4 next_velo =	
-    vmath::rotate<float>(sCmp._default._rotX,
-			             sCmp._default._rotY,
-		                 sCmp._default._rotZ)
+    vmath::rotate<float>(sCmp._default._roll,
+			             sCmp._default._pitch,
+		                 sCmp._default._yaw)
 	    
-	*vmath::translate<float>(0, 0, WANDERER_FORWARD_STEP);
+	*vmath::translate<float>(WANDERER_FORWARD_STEP, 0, 0);
 
 	//Update linear velocity
     pCmp._default._velocityX = next_velo[3][0];
@@ -47,40 +47,40 @@ void TestPhysicsMgr::update(const uint32_t elapsed_time_ns, SpatialComponent& sC
     float aimZ = ai._default._targetZ - sCmp._default._z;
 		
 	//Compute new angles to aim for
-	float aimRotX = atan2(aimY,aimZ) - atan2(next_velo[3][1],next_velo[3][2]);
-	float aimRotY = atan2(aimZ,aimX) - atan2(next_velo[3][2],next_velo[3][0]);
-	//float aimRotZ = atan2(aimX,aimY) - atan2(next_velo[3][0],next_velo[3][1]);
-    if(aimRotX > PI) aimRotX -= 2*PI;
-	if(aimRotX < PI) aimRotX += 2*PI;
-	if(aimRotY > PI) aimRotY -= 2*PI;
-	if(aimRotY < PI) aimRotY += 2*PI;
-	//if(aimRotZ > PI) aimRotZ -= 2*PI;
-	//if(aimRotZ < PI) aimRotZ += 2*PI;
-	aimRotX *= (180.0 / PI);
-	aimRotY *= (180.0 / PI);
-	//aimRotZ *= (180.0 / PI);
-	if(aimRotX > 180) aimRotX = aimRotX-360;
-	if(aimRotY > 180) aimRotY = aimRotY-360;
-	//if(aimRotZ > 180) aimRotZ = aimRotZ-360;
-	if(aimRotX < -180) aimRotX += 360;
-	if(aimRotY < -180) aimRotY += 360;
-	//if(aimRotZ < -180) aimRotZ += 360;
+	//float aimRoll = atan2(aimY,aimZ) - atan2(next_velo[3][1],next_velo[3][2]);
+	float aimPitch = atan2(aimZ,aimX) - atan2(next_velo[3][2],next_velo[3][0]);
+	float aimYaw = atan2(aimX,aimY) - atan2(next_velo[3][0],next_velo[3][1]);
+    //if(aimRoll > PI) aimRoll -= 2*PI;
+	//if(aimRoll < PI) aimRoll += 2*PI;
+	if(aimPitch > PI) aimPitch -= 2*PI;
+	if(aimPitch < PI) aimPitch += 2*PI;
+	if(aimYaw > PI) aimYaw -= 2*PI;
+	if(aimYaw < PI) aimYaw += 2*PI;
+	//aimRoll *= (180.0 / PI);
+	aimPitch *= (180.0 / PI);
+	aimYaw *= (180.0 / PI);
+	//if(aimRoll > 180) aimRoll = aimRoll-360;
+	if(aimPitch > 180) aimPitch = aimPitch-360;
+	if(aimYaw > 180) aimYaw = aimYaw-360;
+	//if(aimRoll < -180) aimRoll += 360;
+	if(aimPitch < -180) aimPitch += 360;
+	if(aimYaw < -180) aimYaw += 360;
 
 	//Adjust angular velocity to aim for the good direction
-	pCmp._default._angularVelocityX = -aimRotX;
-	pCmp._default._angularVelocityY = -aimRotY;
-	//pCmp._default._angularVelocityZ = -aimRotZ;
+	//pCmp._default._angularVelocityX = -aimRoll;
+	pCmp._default._angularVelocityY = -aimPitch;
+	pCmp._default._angularVelocityZ = -aimYaw;
 
 	//Apply new angular velocity to rotation proportionally to elapsed time
-	sCmp._default._rotX += pCmp._default._angularVelocityX*(elapsed_time_ns/1000000000.0);
-	sCmp._default._rotY += pCmp._default._angularVelocityY*(elapsed_time_ns/1000000000.0);
-	sCmp._default._rotZ += pCmp._default._angularVelocityZ*(elapsed_time_ns/1000000000.0);
-	if(sCmp._default._rotX < 0) sCmp._default._rotX += 360;
-	if(sCmp._default._rotX >= 360.0) sCmp._default._rotX -= 360;
-	if(sCmp._default._rotY < 0) sCmp._default._rotY += 360;
-	if(sCmp._default._rotY >= 360.0) sCmp._default._rotY -= 360;
-	if(sCmp._default._rotZ < 0) sCmp._default._rotZ += 360;
-	if(sCmp._default._rotZ >= 360.0) sCmp._default._rotZ -= 360;
+	sCmp._default._roll += pCmp._default._angularVelocityX*(elapsed_time_ns/1000000000.0);
+	sCmp._default._pitch += pCmp._default._angularVelocityY*(elapsed_time_ns/1000000000.0);
+	sCmp._default._yaw += pCmp._default._angularVelocityZ*(elapsed_time_ns/1000000000.0);
+	if(sCmp._default._roll < 0) sCmp._default._roll += 360;
+	if(sCmp._default._roll >= 360.0) sCmp._default._roll -= 360;
+	if(sCmp._default._pitch < 0) sCmp._default._pitch += 360;
+	if(sCmp._default._pitch >= 360.0) sCmp._default._pitch -= 360;
+	if(sCmp._default._yaw < 0) sCmp._default._yaw += 360;
+	if(sCmp._default._yaw >= 360.0) sCmp._default._yaw -= 360;
 
 	//Compute new position using linear velocity proportionally to elapsed time
 	vmath::mat4 next_pos =   

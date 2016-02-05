@@ -87,9 +87,9 @@ OpenGLMgr::OpenGLMgr(int windowWidth, int windowHeight)
             "{                                                                  \n"
 			"                                                                   \n"
 			"    vec3 position2;                                                 \n"
-			"    position2[0] = position[0]*(0.25-position[2])/0.5;              \n"
-			"    position2[1] = position[1]*(0.25-position[2])/0.5;              \n"
-			"    position2[2] = position[2];              \n"
+			"    position2[0] = position[0];                                     \n"
+			"    position2[1] = position[1]*(0.25-position[0])/0.5;              \n"
+			"    position2[2] = position[2]*(0.25-position[0])/0.5;              \n"
             "    gl_Position =  proj_matrix * mv_matrix * vec4(position2, 1.0);  \n"
             "    vs_out.color = vec4(position,1.0) * 2.0 + vec4(0.5, 0.5, 0.5, 0.0);     \n"
             "}                                                                  \n"
@@ -290,21 +290,21 @@ OpenGLMgr::~OpenGLMgr()
 void OpenGLMgr::setUp()
 {
 
-	glParams.camRotX = _pov->_spatial._default._rotX;
-	glParams.camRotY = _pov->_spatial._default._rotY;
-	glParams.camRotZ = _pov->_spatial._default._rotZ;
+	glParams.camRotX = _pov->_spatial._default._roll;
+	glParams.camRotY = _pov->_spatial._default._pitch;
+	glParams.camRotZ = _pov->_spatial._default._yaw;
 	
     glParams.camPosX = _pov->_spatial._default._x;
 	glParams.camPosY = _pov->_spatial._default._y;
 	glParams.camPosZ = _pov->_spatial._default._z;
 
 	/* /!\ Be careful when reversing the object rotation to adjust the point of view: calling the rotate function first rotates around X, then Y, then Z.
-	       If one wants to reverse such transformation, one might first rotate Z backward, then Y backward, then X backward. */
+	       If one wants to reverse such transformation, one might first rotate Z backward, then Y backward, then Y backward. */
 	proj_matrix = vmath::perspective(50.0f, (float)glParams.windowWidth / (float)glParams.windowHeight, 0.1f, 1000.0f)
 		          *
-		          vmath::rotate<float>(-glParams.camRotX+180, 0, 0)
+		          vmath::rotate<float>(-glParams.camRotX, 0, 0)
 		          *
-		          vmath::rotate<float>(0, -glParams.camRotY, 0)
+		          vmath::rotate<float>(0, -glParams.camRotY+90, 0)
 		          *
 		          vmath::rotate<float>(0, 0, -glParams.camRotZ);
 			      
@@ -336,9 +336,9 @@ void OpenGLMgr::update(const uint32_t elapsed_time_ns, GraphicsComponent& cmp, s
 												    spatial._default._y-glParams.camPosY,
 												    spatial._default._z-glParams.camPosZ)
 			                *
-			                vmath::rotate<float>(spatial._default._rotX,
-											     spatial._default._rotY,
-											     spatial._default._rotZ);
+			                vmath::rotate<float>(spatial._default._roll,
+											     spatial._default._pitch,
+											     spatial._default._yaw);
 	glUniformMatrix4fv(mv_location, 1, GL_FALSE, mv_matrix);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 

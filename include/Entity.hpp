@@ -25,9 +25,9 @@ double _x;
 double _y;
 double _z;
 
-float _rotX;
-float _rotY;
-float _rotZ;	
+float _roll;
+float _pitch;
+float _yaw;
 	
 } _default;
 
