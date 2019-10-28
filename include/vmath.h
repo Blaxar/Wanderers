@@ -1,6 +1,9 @@
 #ifndef __VMATH_H__
 #define __VMATH_H__
 
+/**
+ *  From the OpenGL Programming Guide
+ **/
 
 #define _USE_MATH_DEFINES  1 // Include constants defined in math.h
 #include <math.h>

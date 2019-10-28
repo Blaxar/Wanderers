@@ -12,13 +12,13 @@ class ComponentReader
 	
     public:
 
-	ComponentReader(EntityMgr& entMgr): _entMgr(entMgr){}
+	  ComponentReader(EntityMgr& entMgr): _entMgr(entMgr){}
 
-	inline const ControlComponent getControlComponent(size_t id){return _entMgr._entities[id]._control;}
-	inline const SpatialComponent getSpatialComponent(size_t id){return _entMgr._entities[id]._spatial;}
-	inline const PhysicsComponent getPhysicsComponent(size_t id){return _entMgr._entities[id]._physics;}
+	  inline const ControlComponent getControlComponent(size_t id){return _entMgr._entities[id]._control;}
+	  inline const SpatialComponent getSpatialComponent(size_t id){return _entMgr._entities[id]._spatial;}
+	  inline const PhysicsComponent getPhysicsComponent(size_t id){return _entMgr._entities[id]._physics;}
     inline const GraphicsComponent getGraphicsComponent(size_t id){return _entMgr._entities[id]._graphics;}
-	inline const SoundComponent getSoundComponent(size_t id){return _entMgr._entities[id]._sound;}
+	  inline const SoundComponent getSoundComponent(size_t id){return _entMgr._entities[id]._sound;}
 	
 };
 

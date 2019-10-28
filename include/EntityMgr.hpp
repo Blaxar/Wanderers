@@ -13,76 +13,82 @@ class VoidMgr: public ComponentMgr
 	
     public:
 
-	VoidMgr(){}
-	~VoidMgr(){}
+
+    VoidMgr(){}
+	  ~VoidMgr(){}
 	
     inline void setUp(void){}
     inline void update(const uint32_t eapsed_time_ns, Entity& ent){}
-	inline void tearDown(void){}
+	  inline void tearDown(void){}
 	
 };
 
 class EntityMgr
 {
-	
-public:
 
-	static EntityMgr&
-	getInstance(ControlMgr* ctrlMgr = nullptr, PhysicsMgr* physicsMgr = nullptr, GraphicsMgr* graphicsMgr = nullptr, SoundMgr* soundMgr = nullptr)
-	{
+    public:
 
-		static EntityMgr instance(ctrlMgr, physicsMgr, graphicsMgr, soundMgr);
-		return instance;
-		
-	}
+	  static EntityMgr&
+	  getInstance(ControlMgr* ctrlMgr = nullptr, PhysicsMgr* physicsMgr = nullptr, GraphicsMgr* graphicsMgr = nullptr, SoundMgr* soundMgr = nullptr) {
 
-	std::vector<EntityPtr> create(Entity proto, size_t number=1);
-	
-	void destroy(EntityPtr& entity);
-	
-	void update(uint32_t elapsed_time_ns);
-	
+        static EntityMgr instance(ctrlMgr, physicsMgr, graphicsMgr, soundMgr);
+        return instance;
+
+	  }
+
+	  std::vector<EntityPtr> create(Entity proto, size_t number=1);
+
+    void destroy(EntityPtr& entity);
+
+    void update(uint32_t elapsed_time_ns);
+
     Entity* operator [] (size_t i) {return &_entities[i];}
 
-private:
-	
-	std::vector<size_t> _freeSlots;
-	std::vector<Entity> _entities;
-	
+    private:
+
+	  std::vector<size_t> _freeSlots;
+    std::vector<Entity> _entities;
+
     ControlMgr* _controlMgr;
     PhysicsMgr* _physicsMgr;
     GraphicsMgr* _graphicsMgr;
     SoundMgr* _soundMgr;
 
-	EntityMgr(ControlMgr* ctrlMgr = nullptr, PhysicsMgr* physicsMgr = nullptr, GraphicsMgr* graphicsMgr = nullptr, SoundMgr* soundMgr = nullptr):
-		      _controlMgr(ctrlMgr), _physicsMgr(physicsMgr), _graphicsMgr(graphicsMgr), _soundMgr(soundMgr){}
-	
-	EntityMgr(EntityMgr const&) = delete;
-	void operator = (EntityMgr const&) = delete;
+	  EntityMgr(ControlMgr* ctrlMgr = nullptr,
+              PhysicsMgr* physicsMgr = nullptr,
+              GraphicsMgr* graphicsMgr = nullptr,
+              SoundMgr* soundMgr = nullptr):
+		      _controlMgr(ctrlMgr),
+          _physicsMgr(physicsMgr),
+          _graphicsMgr(graphicsMgr),
+          _soundMgr(soundMgr) {}
 
-	friend class EntityPtr;
-	friend class ComponentReader;
+	  EntityMgr(EntityMgr const&) = delete;
+	  void operator = (EntityMgr const&) = delete;
+
+	  friend class EntityPtr;
+	  friend class ComponentReader;
 	
 };
 
 class EntityPtr
 {
-	
+
     private:
 
     EntityMgr& _entityMgr;
-	size_t _id;
-	
-	EntityPtr(EntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
+	  size_t _id;
+
+	  EntityPtr(EntityMgr& entityMgr, size_t id):_entityMgr(entityMgr), _id(id){}
 
     public:
 
-	~EntityPtr(){}
+	  ~EntityPtr(){}
 
-	EntityType getType(){ return _entityMgr[_id]->_type; }
+	  EntityType getType(){ return _entityMgr[_id]->_type; }
 
-	friend class EntityMgr;
-	
+	  friend class EntityMgr;
+
 };
 
 #endif //ENTITYMGR_HPP

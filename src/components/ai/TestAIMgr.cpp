@@ -23,8 +23,8 @@ void TestAIMgr::setUp()
 void TestAIMgr::update(const uint32_t elapsed_time_ns, ControlComponent& cmp, size_t id)
 {
 
-	const SpatialComponent spatial = _cmpRdr->getSpatialComponent(id);
-	
+	  const SpatialComponent spatial = _cmpRdr->getSpatialComponent(id);
+
 		if((spatial._default._x-cmp._default._targetX)*
 		   (spatial._default._x-cmp._default._targetX)<0.25 &&
 		   (spatial._default._y-cmp._default._targetY)*
@@ -36,7 +36,7 @@ void TestAIMgr::update(const uint32_t elapsed_time_ns, ControlComponent& cmp, si
 	    	cmp._default._targetY = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		    cmp._default._targetZ = ((rand()-(RAND_MAX/2))/(float)RAND_MAX)*10;
 		}
-	
+
 }
 
 void TestAIMgr::tearDown()

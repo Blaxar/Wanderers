@@ -8,10 +8,10 @@
 class EntityFactory
 {
 
-	EntityFactory();
-	~EntityFactory();
+	  EntityFactory();
+	  ~EntityFactory();
 
-	Entity createWanderer();
+	  Entity createWanderer();
 
 };
 

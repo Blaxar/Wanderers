@@ -21,13 +21,13 @@ union SpatialComponent
 struct DefaultSpatialComponent
 {
 
-double _x;
-double _y;
-double _z;
+    double _x;
+    double _y;
+    double _z;
 
-float _roll;
-float _pitch;
-float _yaw;
+    float _roll;
+    float _pitch;
+    float _yaw;
 	
 } _default;
 
@@ -42,16 +42,16 @@ union PhysicsComponent
 
 struct DefaultPhysicsComponent{
 
-	float _weight;
+	  float _weight;
 	
-	float _velocityX;
-	float _velocityY;
-	float _velocityZ;
-	
-	float _angularVelocityX;
-	float _angularVelocityY;
-	float _angularVelocityZ;
-	
+	  float _velocityX;
+	  float _velocityY;
+	  float _velocityZ;
+
+    float _angularVelocityX;
+	  float _angularVelocityY;
+	  float _angularVelocityZ;
+
 } _default;
 
 struct VoidComponent _void;
@@ -85,9 +85,9 @@ union ControlComponent
 
 struct DefaultControlComponent{
 
-	double _targetX;
-	double _targetY;
-	double _targetZ;
+	  double _targetX;
+	  double _targetY;
+	  double _targetZ;
 
 } _default;
 struct VoidComponent _void;
@@ -99,10 +99,10 @@ struct VoidComponent _void;
 struct Entity
 {
 
-	EntityType _type;
-	SpatialComponent _spatial;
-	PhysicsComponent _physics;
-	GraphicsComponent _graphics;
+	  EntityType _type;
+	  SpatialComponent _spatial;
+	  PhysicsComponent _physics;
+	  GraphicsComponent _graphics;
     SoundComponent _sound;
     ControlComponent _control;
 	
